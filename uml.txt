@@ -1,0 +1,77 @@
+@startuml
+namespace github.com\\tfbrother\\bigcache {
+ class BigCache {
+  shards []*cacheShard
+  lifeWindow uint64
+  clock clock
+  hash Hasher
+  config Config
+  shardMask uint64
+  maxShardSize uint32
+} 
+}
+namespace github.com\\tfbrother\\bigcache {
+ class cacheShard {
+  hashmap map[uint64]uint32
+  entries queue.BytesQueue
+  lock sync.RWMutex
+  entryBuffer []byte
+} 
+}
+namespace github.com\\tfbrother\\bigcache {
+ class systemClock {
+} 
+}
+namespace github.com\\tfbrother\\bigcache {
+ class Config {
+  Shards int
+  LifeWindow time.Duration
+  MaxEntriesInWindow int
+  MaxEntrySize int
+  Verbose bool
+  Hasher Hasher
+  HardMaxCacheSize int
+} 
+}
+namespace github.com\\tfbrother\\bigcache {
+ class EntryNotFoundError {
+  message string
+} 
+}
+namespace github.com\\tfbrother\\bigcache {
+ class fnv64a {
+} 
+}
+namespace github.com\\tfbrother\\bigcache\\queue {
+ class BytesQueue {
+  array []byte
+  capacity int
+  maxCapacity int
+  head int
+  tail int
+  count int
+  rightMargin int
+  headerBuffer []byte
+  verbose bool
+} 
+}
+namespace github.com\\tfbrother\\bigcache\\queue {
+ class queueError {
+  message string
+} 
+}
+namespace github.com\\tfbrother\\bigcache {
+ interface clock  {
+  epoch()int64
+} 
+}
+namespace github.com\\tfbrother\\bigcache {
+ interface Hasher  {
+  Sum64(string)uint64
+} 
+}
+github.com\\tfbrother\\bigcache.BigCache ---> "*" github.com\\tfbrother\\bigcache.cacheShard : shards
+github.com\\tfbrother\\bigcache.BigCache ---> github.com\\tfbrother\\bigcache.Config : config
+github.com\\tfbrother\\bigcache.clock <|- github.com\\tfbrother\\bigcache.systemClock
+github.com\\tfbrother\\bigcache.Hasher <|- github.com\\tfbrother\\bigcache.fnv64a
+@enduml
